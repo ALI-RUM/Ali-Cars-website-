@@ -1,155 +1,104 @@
-# Ali-Cars-website-
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { createPageUrl } from "../utils";
+import { Car } from "../entities/Car";
+import { ArrowRight, Star, Shield, Award, Users } from "lucide-react";
+import { Button } from "../components/ui/button";
+import { Card, CardContent } from "../components/ui/card";
 
+import FeaturedCars from "../components/home/FeaturedCars";
+import StatsSection from "../components/home/StatsSection";
 
-import React from "react";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { X } from "lucide-react";
+export default function Home() {
+  const [featuredCars, setFeaturedCars] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
+  useEffect(() => {
+    loadFeaturedCars();
+  }, []);
 
-export default function CarFilters({ filters, onFilterChange, onClearFilters, uniqueMakes }) {
-  const handleFilterChange = (key, value) => {
-    onFilterChange({
-      ...filters,
-      [key]: value
-    });
+  const loadFeaturedCars = async () => {
+    try {
+      const cars = await Car.filter({ is_featured: true, is_sold: false }, "-created_date", 6);
+      setFeaturedCars(cars);
+    } catch (error) {
+      console.error("Error loading featured cars:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-
-  const hasActiveFilters = Object.values(filters).some(v => v);
-
-
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-gray-900">Filters</h3>
-        {hasActiveFilters && (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onClearFilters}
-            className="text-blue-600 hover:text-blue-700"
-          >
-            <X className="w-4 h-4 mr-1" />
-            Wissen
-          </Button>
-        )}
-      </div>
-
-
-      <div className="space-y-4">
-        <div>
-          <Label className="text-sm font-medium text-gray-700">Merk</Label>
-          <Select value={filters.make} onValueChange={(value) => handleFilterChange('make', value)}>
-            <SelectTrigger className="mt-1">
-              <SelectValue placeholder="Alle merken" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value={null}>Alle merken</SelectItem>
-              {uniqueMakes.map((make) => (
-                <SelectItem key={make} value={make}>
-                  {make}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+    <div className="bg-white">
+      {/* Hero Section with Video */}
+      <section className="relative text-white overflow-hidden">
+        <video
+          className="absolute inset-0 w-full h-full object-cover"
+          src="https://www.example.com/your-video.mp4"
+          autoPlay
+          loop
+          muted
+          playsInline
+        />
+        <div className="absolute inset-0 bg-black opacity-40"></div>
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-32">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <h1 className="text-4xl lg:text-6xl font-bold leading-tight mb-6">
+                Vind uw perfecte
+                <span className="block text-blue-300">Tweedehands Auto</span>
+              </h1>
+              <p className="text-xl text-blue-100 mb-8 leading-relaxed">
+                Ontdek kwaliteitsvoertuigen die grondig zijn geïnspecteerd en gecertificeerd. Uw droomauto wacht op u bij Ali-Cars.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Link to={createPageUrl("Cars")}>
+                  <Button size="lg" className="bg-white text-blue-900 hover:bg-gray-100 px-8 py-3">
+                    Bekijk Onze Auto's
+                    <ArrowRight className="ml-2 w-5 h-5" />
+                  </Button>
+                </Link>
+                <Link to={createPageUrl("Contact")}>
+                  <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-blue-900 px-8 py-3">
+                    Contacteer Ons
+                  </Button>
+                </Link>
+              </div>
+            </div>
+            <div className="relative">
+              <div className="absolute inset-0 rounded-3xl overflow-hidden">
+                <video
+                  className="w-full h-full object-cover"
+                  src="https://www.example.com/car-animation.mp4"
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                />
+              </div>
+            </div>
+          </div>
         </div>
+      </section>
 
+      {/* Why Choose Us Section */}
+      <section className="py-20 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">Waarom kiezen voor Ali-Cars?</h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Wij streven ernaar u de beste aankoopervaring te bieden door kwaliteit, transparantie en uitzonderlijke service.
+            </p>
+          </div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <Card className="text-center border-none shadow-lg hover:shadow-xl transition-shadow duration-300">
+              <CardContent className="p-8">
+                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <Shield className="w-8 h-8 text-blue-600" />
+                </div>
+                <h3 className="text-xl font-semibold mb-4">Kwaliteit Gegarandeerd</h3>
+                <p className="text-gray-600">Elk voertuig ondergaat een grondige inspectie om betrouwbaarheid en veiligheid te garanderen.</p>
+              </CardContent>
+            </Card>
 
-        <div>
-          <Label className="text-sm font-medium text-gray-700">Prijsklasse</Label>
-          <Select value={filters.priceRange} onValueChange={(value) => handleFilterChange('priceRange', value)}>
-            <SelectTrigger className="mt-1">
-              <SelectValue placeholder="Elke prijs" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value={null}>Elke prijs</SelectItem>
-              <SelectItem value="under-10k">Onder €10.000</SelectItem>
-              <SelectItem value="10k-20k">€10.000 - €20.000</SelectItem>
-              <SelectItem value="20k-30k">€20.000 - €30.000</SelectItem>
-              <SelectItem value="over-30k">Boven €30.000</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-
-        <div>
-          <Label className="text-sm font-medium text-gray-700">Brandstoftype</Label>
-          <Select value={filters.fuelType} onValueChange={(value) => handleFilterChange('fuelType', value)}>
-            <SelectTrigger className="mt-1">
-              <SelectValue placeholder="Elk brandstoftype" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value={null}>Elk brandstoftype</SelectItem>
-              <SelectItem value="Gasoline">Benzine</SelectItem>
-              <SelectItem value="Diesel">Diesel</SelectItem>
-              <SelectItem value="Hybrid">Hybride</SelectItem>
-              <SelectItem value="Electric">Elektrisch</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-
-        <div>
-          <Label className="text-sm font-medium text-gray-700">Transmissie</Label>
-          <Select value={filters.transmission} onValueChange={(value) => handleFilterChange('transmission', value)}>
-            <SelectTrigger className="mt-1">
-              <SelectValue placeholder="Elke transmissie" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value={null}>Elke transmissie</SelectItem>
-              <SelectItem value="Manual">Handgeschakeld</SelectItem>
-              <SelectItem value="Automatic">Automaat</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-
-        <div>
-          <Label className="text-sm font-medium text-gray-700">Carrosserietype</Label>
-          <Select value={filters.bodyType} onValueChange={(value) => handleFilterChange('bodyType', value)}>
-            <SelectTrigger className="mt-1">
-              <SelectValue placeholder="Elk carrosserietype" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value={null}>Elk carrosserietype</SelectItem>
-              <SelectItem value="Sedan">Sedan</SelectItem>
-              <SelectItem value="SUV">SUV</SelectItem>
-              <SelectItem value="Hatchback">Hatchback</SelectItem>
-              <SelectItem value="Coupe">Coupé</SelectItem>
-              <SelectItem value="Convertible">Cabriolet</SelectItem>
-              <SelectItem value="Truck">Vrachtwagen</SelectItem>
-              <SelectItem value="Van">Bestelwagen</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-
-        <div>
-          <Label className="text-sm font-medium text-gray-700">Staat</Label>
-          <Select value={filters.condition} onValueChange={(value) => handleFilterChange('condition', value)}>
-            <SelectTrigger className="mt-1">
-              <SelectValue placeholder="Elke staat" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value={null}>Elke staat</SelectItem>
-              <SelectItem value="Excellent">Uitstekend</SelectItem>
-              <SelectItem value="Very Good">Zeer Goed</SelectItem>
-              <SelectItem value="Good">Goed</SelectItem>
-              <SelectItem value="Fair">Redelijk</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-
+            <Card className="text-center border-none shadow-lg
